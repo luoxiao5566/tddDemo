@@ -49,7 +49,6 @@ public class ArgsTest {
     static record StringOption(@Option("d") String directory) {
     }
 
-    // todo: multi optionsL: -l -p 8080 -d /usr/logs
     @Test
     public void should_parse_multi_options() {
         MultiOptions options = Args.parse(MultiOptions.class, "-l", "-p", "8080", "-d", "/usr/logs");
