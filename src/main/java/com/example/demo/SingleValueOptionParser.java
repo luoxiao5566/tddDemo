@@ -3,19 +3,22 @@ package com.example.demo;
 import java.util.List;
 import java.util.function.Function;
 
-class SingleValueOptionParser<T> implements OptionParser {
+class SingleValueOptionParser<T> implements OptionParser<T> {
     Function<String, T> valueParse;
+    T defaultValue;
 
-    public SingleValueOptionParser(Function<String, T> valueParse) {
+    public SingleValueOptionParser(T defaultValue, Function<String, T> valueParse) {
+        this.defaultValue = defaultValue;
         this.valueParse = valueParse;
     }
 
     @Override
-    public T parse(List<String> argument, Option option) {
-        int index = argument.indexOf("-" + option.value());
-        String value = argument.get(index + 1);
-
-        return valueParse.apply(value);
+    public T parse(List<String> arguments, Option option) {
+        int index = arguments.indexOf("-" + option.value());
+        if (index == -1) return defaultValue;
+        if (index + 1 == arguments.size() || arguments.get(index + 1).startsWith("-")) throw new InsufficientArgumentsException(option.value());
+        if (index + 2 < arguments.size() && !arguments.get(index + 2).startsWith("-")) throw new TooManyArgumentsException(option.value());
+        return valueParse.apply(arguments.get(index + 1));
     }
 
 }
